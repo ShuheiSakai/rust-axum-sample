@@ -374,6 +374,7 @@ name = "rust-axum-sample"
 version = "0.1.0"
 dependencies = [
  "axum",
+ "hyper",
  "tokio",
 ]
 
