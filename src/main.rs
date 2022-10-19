@@ -1,16 +1,17 @@
+use axum::routing::get;
+
 #[tokio::main]
 async fn main() {
-    let listener = tokio::net::TcpListener::bind("127.0.0.1:3000")
+    // Build our application by creating our router
+    let app = axum::Router::new().route("/", get(hello));
+
+    // Run our application as a hyper server on http://localhost:3000
+    axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
+        .serve(app.into_make_service())
         .await
         .unwrap();
-    loop {
-        let (socket, _address) = listener.accept().await.unwrap();
-        tokio::spawn(async move {
-            process(socket).await;
-        });
-    }
 }
 
-async fn process(socket: tokio::net::TcpStream) {
-    println!("process socket");
+pub async fn hello() -> String {
+    "Hello, World!".into()
 }
