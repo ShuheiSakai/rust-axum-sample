@@ -11,6 +11,7 @@ async fn main() {
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
         .serve(app.into_make_service())
+        .with_graceful_shutdown(shutdown_signal())
         .await
         .unwrap();
 }
@@ -26,4 +27,13 @@ pub async fn fallback(uri: axum::http::Uri) -> impl axum::response::IntoResponse
         axum::http::StatusCode::NOT_FOUND,
         format!("No route {}", uri),
     )
+}
+
+/// Tokio signal handler that will wait for a user to press CTRL+C
+/// We use this in our hyper `Server` method `with_graceful_shutdown`.`
+async fn shutdown_signal() {
+    tokio::signal::ctrl_c()
+        .await
+        .expect("expect tokio signal ctrl-c");
+    println!("signal shutdown");
 }
