@@ -8,7 +8,8 @@ async fn main() {
     let app = axum::Router::new()
         .fallback(fallback.into_service())
         .route("/", get(hello))
-        .route("/demo.html", get(get_demo_html));
+        .route("/demo.html", get(get_demo_html))
+        .route("/hello.html", get(hello_html));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -24,6 +25,10 @@ pub async fn hello() -> String {
 
 pub async fn get_demo_html() -> Html<&'static str> {
     "<h1>Hello</h1>".into()
+}
+
+async fn hello_html() -> Html<&'static str> {
+    include_str!("hello.html").into()
 }
 
 /// axum handler for any request that fails to match the router routes.
