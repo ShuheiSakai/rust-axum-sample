@@ -1,4 +1,5 @@
 use axum::handler::Handler;
+use axum::response::Html;
 use axum::routing::get;
 
 #[tokio::main]
@@ -6,7 +7,8 @@ async fn main() {
     // Build our application by creating our router
     let app = axum::Router::new()
         .fallback(fallback.into_service())
-        .route("/", get(hello));
+        .route("/", get(hello))
+        .route("/demo.html", get(get_demo_html));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -18,6 +20,10 @@ async fn main() {
 
 pub async fn hello() -> String {
     "Hello, World!".into()
+}
+
+pub async fn get_demo_html() -> Html<&'static str> {
+    "<h1>Hello</h1>".into()
 }
 
 /// axum handler for any request that fails to match the router routes.
