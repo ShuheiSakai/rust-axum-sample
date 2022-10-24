@@ -1,4 +1,4 @@
-use axum::{handler::Handler, response::Html, routing::get};
+use axum::{handler::Handler, http::StatusCode, response::Html, routing::get};
 
 #[tokio::main]
 async fn main() {
@@ -7,7 +7,8 @@ async fn main() {
         .fallback(fallback.into_service())
         .route("/", get(hello))
         .route("/demo.html", get(get_demo_html))
-        .route("/hello.html", get(hello_html));
+        .route("/hello.html", get(hello_html))
+        .route("/demo-status", get(demo_status));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -27,6 +28,12 @@ pub async fn get_demo_html() -> Html<&'static str> {
 
 async fn hello_html() -> Html<&'static str> {
     include_str!("hello.html").into()
+}
+
+/// axum hanlder for "GET /demo-status" which returns a HTTP status
+/// code, such as OK(200), and a custom user-visible string message.
+pub async fn demo_status() -> (axum::http::StatusCode, String) {
+    (StatusCode::OK, "Everything is OK".to_string())
 }
 
 /// axum handler for any request that fails to match the router routes.
