@@ -1,6 +1,4 @@
-use axum::handler::Handler;
-use axum::response::Html;
-use axum::routing::get;
+use axum::{handler::Handler, response::Html, routing::get};
 
 #[tokio::main]
 async fn main() {
