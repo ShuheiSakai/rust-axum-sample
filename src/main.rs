@@ -8,7 +8,8 @@ async fn main() {
         .route("/", get(hello))
         .route("/demo.html", get(get_demo_html))
         .route("/hello.html", get(hello_html))
-        .route("/demo-status", get(demo_status));
+        .route("/demo-status", get(demo_status))
+        .route("/demo-uri", get(demo_uri));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -39,6 +40,12 @@ async fn hello_html() -> Html<&'static str> {
 /// code, such as OK(200), and a custom user-visible string message.
 pub async fn demo_status() -> (axum::http::StatusCode, String) {
     (StatusCode::OK, "Everything is OK".to_string())
+}
+
+/// axum hanlder for "GET /demo-uri" which shows the request's own URI.
+/// This shows how to write a handler that receives the URI.
+pub async fn demo_uri(uri: axum::http::Uri) -> String {
+    format!("The URI is: {:?}", uri)
 }
 
 /// axum handler for any request that fails to match the router routes.
