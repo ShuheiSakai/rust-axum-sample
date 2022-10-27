@@ -30,7 +30,7 @@ pub async fn get_demo_html() -> Html<&'static str> {
 
 /// axum handler that responds with typical HTML coming from a file.
 /// This uses the Rust macro `std::include_str` to include a UTF-8 file
-/// path, relative to `main.rs`, as a `&'static str` at compile time 
+/// path, relative to `main.rs`, as a `&'static str` at compile time
 async fn hello_html() -> Html<&'static str> {
     include_str!("hello.html").into()
 }
