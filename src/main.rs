@@ -9,7 +9,8 @@ async fn main() {
         .route("/demo.html", get(get_demo_html))
         .route("/hello.html", get(hello_html))
         .route("/demo-status", get(demo_status))
-        .route("/demo-uri", get(demo_uri));
+        .route("/demo-uri", get(demo_uri))
+        .route("/demo.png", get(get_demo_png));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -46,6 +47,20 @@ pub async fn demo_status() -> (axum::http::StatusCode, String) {
 /// This shows how to write a handler that receives the URI.
 pub async fn demo_uri(uri: axum::http::Uri) -> String {
     format!("The URI is: {:?}", uri)
+}
+
+/// axum handler for "GET /demo.png" which responds with an image PNG.
+/// This sets a header "image/png" then sends the decoded images data.
+async fn get_demo_png() -> impl axum::response::IntoResponse {
+    let png = concat!(
+        "iVBORw0KGgoAAAANSUhEUgAAAAEAAAAB",
+        "CAYAAAAfFcSJAAAADUlEQVR42mPk+89Q",
+        "DwADvgGOSHzRgAAAAABJRU5ErkJggg=="
+    );
+    (
+        axum::response::AppendHeaders([(axum::http::header::CONTENT_TYPE, "image/png")]),
+        base64::decode(png).unwrap(),
+    )
 }
 
 /// axum handler for any request that fails to match the router routes.
