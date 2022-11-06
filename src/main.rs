@@ -10,7 +10,15 @@ async fn main() {
         .route("/hello.html", get(hello_html))
         .route("/demo-status", get(demo_status))
         .route("/demo-uri", get(demo_uri))
-        .route("/demo.png", get(get_demo_png));
+        .route("/demo.png", get(get_demo_png))
+        .route(
+            "/foo",
+            get(get_foo)
+                .put(put_foo)
+                .patch(patch_foo)
+                .post(post_foo)
+                .delete(delete_foo),
+        );
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -61,6 +69,28 @@ async fn get_demo_png() -> impl axum::response::IntoResponse {
         axum::response::AppendHeaders([(axum::http::header::CONTENT_TYPE, "image/png")]),
         base64::decode(png).unwrap(),
     )
+}
+
+/// axum handler for "GET /foo" whitch returns a string message.
+/// This shows our naming convention for HTTP GET handlers.
+pub async fn get_foo() -> String {
+    "GET foo".to_string()
+}
+
+pub async fn put_foo() -> String {
+    "PUT foo".to_string()
+}
+
+pub async fn patch_foo() -> String {
+    "PATCH foo".to_string()
+}
+
+pub async fn post_foo() -> String {
+    "POST foo".to_string()
+}
+
+pub async fn delete_foo() -> String {
+    "DELETE foo".to_string()
 }
 
 /// axum handler for any request that fails to match the router routes.
