@@ -18,7 +18,8 @@ async fn main() {
                 .patch(patch_foo)
                 .post(post_foo)
                 .delete(delete_foo),
-        );
+        )
+        .route("/item/:id", get(get_item_id));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -91,6 +92,12 @@ pub async fn post_foo() -> String {
 
 pub async fn delete_foo() -> String {
     "DELETE foo".to_string()
+}
+
+/// axum handler for "Get /item/:id" which uses `axum::extractor::Path`.
+/// This extracts a path parameter then deserializes it as needed.
+pub async fn get_item_id(axum::extract::Path(id): axum::extract::Path<String>) -> String {
+    format!("Get items with path id: {:?}", id)
 }
 
 /// axum handler for any request that fails to match the router routes.
