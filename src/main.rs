@@ -1,4 +1,5 @@
 use axum::{handler::Handler, http::StatusCode, response::Html, routing::get};
+use std::collections::HashMap;
 
 #[tokio::main]
 async fn main() {
@@ -19,7 +20,8 @@ async fn main() {
                 .post(post_foo)
                 .delete(delete_foo),
         )
-        .route("/item/:id", get(get_item_id));
+        .route("/item/:id", get(get_item_id))
+        .route("/items", get(get_items));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -98,6 +100,14 @@ pub async fn delete_foo() -> String {
 /// This extracts a path parameter then deserializes it as needed.
 pub async fn get_item_id(axum::extract::Path(id): axum::extract::Path<String>) -> String {
     format!("Get items with path id: {:?}", id)
+}
+
+/// axum hadler for "GET /items" which uses `axum::extract::Query`.
+/// This extracts query paramaeters and creates a key-value pair map.
+pub async fn get_items(
+    axum::extract::Query(params): axum::extract::Query<HashMap<String, String>>,
+) -> String {
+    format!("Get items with query params: {:?}", params)
 }
 
 /// axum handler for any request that fails to match the router routes.
