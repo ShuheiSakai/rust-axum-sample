@@ -1,4 +1,5 @@
 use axum::{handler::Handler, http::StatusCode, response::Html, routing::get};
+use serde_json::{json, Value};
 use std::collections::HashMap;
 
 #[tokio::main]
@@ -21,7 +22,8 @@ async fn main() {
                 .delete(delete_foo),
         )
         .route("/item/:id", get(get_item_id))
-        .route("/items", get(get_items));
+        .route("/items", get(get_items))
+        .route("/demo.json", get(get_demo_json).put(put_demo_json));
 
     // Run our application as a hyper server on http://localhost:3000
     axum::Server::bind(&"0.0.0.0:3000".parse().unwrap())
@@ -108,6 +110,19 @@ pub async fn get_items(
     axum::extract::Query(params): axum::extract::Query<HashMap<String, String>>,
 ) -> String {
     format!("Get items with query params: {:?}", params)
+}
+
+pub async fn get_demo_json() -> axum::extract::Json<Value> {
+    json!({"a":"b"}).into()
+}
+
+/// axum handler for "PUT /demo.json" which uses `axum::sctract::Json`.
+/// This buffers the request body then deserializes it using serde.
+/// The `Json` type supports types that implement `serde::Deserialize`
+pub async fn put_demo_json(
+    axum::extract::Json(data): axum::extract::Json<serde_json::Value>,
+) -> String {
+    format!("Put demo JSON data: {:?}", data)
 }
 
 /// axum handler for any request that fails to match the router routes.
